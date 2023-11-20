@@ -1,6 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Union, Dict, Any, List
 
+from ishelly.components.base import JSONRPCRequest
+
+
 # Configuration
 class SwitchConfig(BaseModel):
     id: int = Field(..., description="Id of the Switch component instance")
@@ -97,47 +100,47 @@ class SwitchGetConfigRequest(JSONRPCRequest):
 
 
 
-device_rpc_url = "http://192.168.1.26/rpc"
-payload_id = 1
-page = "Switch.Set"
-values = {"id": 0, "on": True, "toggle_after": 10}
-request = JSONRPCRequest(method=page, params=values, id=payload_id)
+# device_rpc_url = "http://192.168.1.26/rpc"
+# payload_id = 1
+# page = "Switch.Set"
+# values = {"id": 0, "on": True, "toggle_after": 10}
+# request = JSONRPCRequest(method=page, params=values, id=payload_id)
 
-response = post(device_rpc_url, json=request)
+# response = post(device_rpc_url, json=request)
 
-# Create Pydantic model instance
-switch_id = 0
-req = SwitchSetRequest(
-    id=1,
-    params=SwitchSetParams(id=switch_id, on=True, toggle_after=10)
-)
-response = post(device_rpc_url, json=req.model_dump())
+# # Create Pydantic model instance
+# switch_id = 0
+# req = SwitchSetRequest(
+#     id=1,
+#     params=SwitchSetParams(id=switch_id, on=True, toggle_after=10)
+# )
+# response = post(device_rpc_url, json=req.model_dump())
 
-# Get status example
-req = SwitchGetStatusRequest(
-    id=1,
-    params=SwitchGetStatusParams(id=0)
-)
-response = post(device_rpc_url, json=req.model_dump())
-SwitchStatus(**response.json()["result"])
+# # Get status example
+# req = SwitchGetStatusRequest(
+#     id=1,
+#     params=SwitchGetStatusParams(id=0)
+# )
+# response = post(device_rpc_url, json=req.model_dump())
+# SwitchStatus(**response.json()["result"])
 
 
-# set config example
-req = SwitchSetConfigRequest(
-    id=1,
-    params=SwitchSetConfigParams(
-        id=0,
-        config=SwitchConfig(
-            id=0,
-            name="the best switch",
-            in_mode="momentary",
-            initial_state="on",
-            auto_on=True,
-            auto_on_delay=10,
-            auto_off=False,
-            auto_off_delay=20,
-            # other fields...
-        )
-    )
-)
-response = post(device_rpc_url, json=req.model_dump())
+# # set config example
+# req = SwitchSetConfigRequest(
+#     id=1,
+#     params=SwitchSetConfigParams(
+#         id=0,
+#         config=SwitchConfig(
+#             id=0,
+#             name="the best switch",
+#             in_mode="momentary",
+#             initial_state="on",
+#             auto_on=True,
+#             auto_on_delay=10,
+#             auto_off=False,
+#             auto_off_delay=20,
+#             # other fields...
+#         )
+#     )
+# )
+# response = post(device_rpc_url, json=req.model_dump())

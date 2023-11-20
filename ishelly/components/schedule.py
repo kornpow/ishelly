@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional, List
 
-from shelly.components.base import JSONRPCRequest
+from ishelly.components.base import JSONRPCRequest
 
 # Schedule Object
 class Schedule(BaseModel):
@@ -69,48 +69,48 @@ class ScheduleDeleteAllResponse(BaseModel):
 
 
 
-switch_id = 0
-job = SwitchToggleRequest(
-    id=1,
-    params=SwitchToggleParams(id=switch_id)
-)
+# switch_id = 0
+# job = SwitchToggleRequest(
+#     id=1,
+#     params=SwitchToggleParams(id=switch_id)
+# )
 
-req = ScheduleCreateRequest(
-    id=1, 
-    params=ScheduleCreateParams(
-        enable=True, 
-        timespec="*/10 * * * * *", 
-        calls=[job.model_dump()]
-    )
-)
+# req = ScheduleCreateRequest(
+#     id=1, 
+#     params=ScheduleCreateParams(
+#         enable=True, 
+#         timespec="*/10 * * * * *", 
+#         calls=[job.model_dump()]
+#     )
+# )
 
-response = post(device_rpc_url, json=req.model_dump())
-
-
-req = ScheduleUpdateRequest(
-    id=1, 
-    params=ScheduleUpdateParams(
-        id=1,
-        enable=False, 
-        timespec="*/5 * * * * *", 
-        calls=[job.model_dump()]
-    )
-)
-response = post(device_rpc_url, json=req.model_dump())
+# response = post(device_rpc_url, json=req.model_dump())
 
 
-req = ScheduleListRequest(id=1)
-response = post(device_rpc_url, json=req.model_dump())
-ScheduleListResponse(**response.json()["result"])
+# req = ScheduleUpdateRequest(
+#     id=1, 
+#     params=ScheduleUpdateParams(
+#         id=1,
+#         enable=False, 
+#         timespec="*/5 * * * * *", 
+#         calls=[job.model_dump()]
+#     )
+# )
+# response = post(device_rpc_url, json=req.model_dump())
 
 
-req = ScheduleDeleteRequest(
-    id=1,
-    params=ScheduleDeleteParams(id=1)
-)
-response = post(device_rpc_url, json=req.model_dump())
-a = ScheduleDeleteResponse(**response.json()["result"])
+# req = ScheduleListRequest(id=1)
+# response = post(device_rpc_url, json=req.model_dump())
+# ScheduleListResponse(**response.json()["result"])
 
-req = ScheduleDeleteAllRequest(id=1)
-response = post(device_rpc_url, json=req.model_dump())
-ScheduleDeleteAllResponse(**response.json()["result"])
+
+# req = ScheduleDeleteRequest(
+#     id=1,
+#     params=ScheduleDeleteParams(id=1)
+# )
+# response = post(device_rpc_url, json=req.model_dump())
+# a = ScheduleDeleteResponse(**response.json()["result"])
+
+# req = ScheduleDeleteAllRequest(id=1)
+# response = post(device_rpc_url, json=req.model_dump())
+# ScheduleDeleteAllResponse(**response.json()["result"])

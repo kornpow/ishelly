@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional, Union
 
-from shelly.components.base import JSONRPCRequest
+from ishelly.components.base import JSONRPCRequest
 
 
 # Shelly.ListMethods

@@ -8,6 +8,6 @@ class BaseComponent():
 # Generic JSON-RPC Request
 class JSONRPCRequest(BaseModel):
     jsonrpc: str = Field("2.0", description="JSON-RPC version")
-    id: int = Field(..., description="Unique identifier for the request")
+    id: Optional[int] = Field(None, description="Unique identifier for the request")
     method: str = Field(..., description="Method to be invoked")
     params: Optional[Dict[str, Any]] = Field(None, description="Parameters for the method")

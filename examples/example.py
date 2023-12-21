@@ -10,6 +10,8 @@ from ishelly.components.switch import *
 #     SwitchSetParams,
 # )
 from ishelly.components.schedule import *
+from ishelly.components.shelly import *
+
 # (
 #     ScheduleCreateRequest,
 #     ScheduleCreateParams,
@@ -20,7 +22,7 @@ from ishelly.components.schedule import *
 #     ScheduleListResponse,
 # )
 
-device_rpc_url = "http://192.168.1.200/rpc"
+device_rpc_url = "http://192.168.1.201/rpc"
 
 switch_id = 0
 SECONDS_IN_HOUR = 3600
@@ -83,3 +85,11 @@ req = ScheduleDeleteRequest(
 response = post(device_rpc_url, json=req.model_dump())
 schedule_delete = ScheduleDeleteResponse(**response.json()["result"])
 
+
+### GET STATUS of SWITCH
+req = SwitchGetStatusRequest(
+    id=1,
+    params=SwitchGetStatusParams(id=0)
+)
+response = post(device_rpc_url, json=req.model_dump())
+SwitchStatus(**response.json()["result"])

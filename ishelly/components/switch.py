@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from requests import post
 from typing import Optional, Union, Dict, Any, List
 
 from ishelly.components.base import JSONRPCRequest
@@ -213,3 +214,33 @@ class SwitchGetConfigRequest(JSONRPCRequest):
 #     )
 # )
 # response = post(device_rpc_url, json=req.model_dump())
+
+
+class Switch():
+    def __init__(self, device_rpc_url, switch_id):
+        self.switch_id = switch_id
+        self.device_rpc_url = device_rpc_url
+
+    def set(self, params: SwitchSetParams):
+        req = SwitchSetRequest(
+            id=1,
+            params=params
+        )
+        response = post(self.device_rpc_url, json=req.model_dump())
+        result = SwitchSetResponse(**response.json()["result"])
+        return result
+
+    def toggle():
+        pass
+
+    def set_config():
+        pass
+
+    def get_config():
+        pass
+
+    def get_status():
+        pass
+
+    def reset_counters():
+        pass

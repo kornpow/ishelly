@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, List
 
 from ishelly.components.base import JSONRPCRequest
 
@@ -56,13 +56,13 @@ class ShellyGetDeviceInfoResponse(BaseModel):
 
 # Example usage
 # Building request model
-req = ShellyListMethodsRequest(id=1)
+# req = ShellyListMethodsRequest(id=1)
 
-response = post(device_rpc_url, json=req.model_dump())
-shelly_list_methods_response = ShellyListMethodsResponse(**response.json()["result"])
+# response = post(device_rpc_url, json=req.model_dump())
+# shelly_list_methods_response = ShellyListMethodsResponse(**response.json()["result"])
 
-req = ShellyGetDeviceInfoRequest(id=1, params=ShellyGetDeviceInfoParams(ident=True))
-response = post(device_rpc_url, json=req.model_dump())
-shelly_get_device_info_response = ShellyGetDeviceInfoResponse(
-    **response.json()["result"]
-)
+# req = ShellyGetDeviceInfoRequest(id=1, params=ShellyGetDeviceInfoParams(ident=True))
+# response = post(device_rpc_url, json=req.model_dump())
+# shelly_get_device_info_response = ShellyGetDeviceInfoResponse(
+#     **response.json()["result"]
+# )

@@ -1,0 +1,29 @@
+from requests import post
+
+from ishelly.components.switch import *
+from ishelly.components.schedule import *
+from ishelly.components.shelly import *
+
+
+class ShellyClient(object):
+    def __init__(self, device_url):
+        self.device_api_url = device_url + "/rpc"
+        self.shelly_gen = None
+        self.shelly_app = None
+        device_info = self.get_device_info()
+        self.shelly_gen = device_info.gen
+        self.shelly_app = device_info.app
+
+    def get_device_info(self):
+        req = ShellyGetDeviceInfoRequest(id=1, params=ShellyGetDeviceInfoParams(ident=True))
+        response = post(self.device_api_url, json=req.model_dump())
+        shelly_get_device_info_response = ShellyGetDeviceInfoResponse(
+            **response.json()["result"]
+        )
+        return shelly_get_device_info_response
+
+
+class ShellyPlug(ShellyClient):
+    def __init__(self, device_url):
+        super().__init__(device_url)
+        self.switch = Switch(self.device_api_url, 0)

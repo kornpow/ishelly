@@ -11,7 +11,7 @@ class SwitchConfig(BaseModel):
     name: Optional[Union[str, None]] = Field(
         None, description="Name of the switch instance"
     )
-    in_mode: str = Field(..., description="Mode of the associated input")
+    # in_mode: Optional[str] = Field(..., description="Mode of the associated input")
     initial_state: str = Field(..., description="Output state to set on power_on")
     auto_on: bool = Field(
         ...,
@@ -45,6 +45,10 @@ class SwitchConfig(BaseModel):
     )
     current_limit: Optional[int] = Field(
         None, description="Limit (in Amperes) over which overcurrent condition occurs"
+    )
+    restart_required: Optional[bool] = Field(
+        None,
+        description="Is a restart required?",
     )
 
 
@@ -99,7 +103,6 @@ class SwitchStatus(BaseModel):
     )
     errors: Optional[List[str]] = Field(None, description="Error conditions occurred")
 
-
 # Methods
 # Switch.Set
 class SwitchSetParams(BaseModel):
@@ -108,7 +111,6 @@ class SwitchSetParams(BaseModel):
     toggle_after: Optional[int] = Field(
         None, description="Seconds to pass until the switch state is toggled"
     )
-
 
 class SwitchSetRequest(JSONRPCRequest):
     method: str = Field("Switch.Set", description="Method to be invoked")
@@ -158,6 +160,13 @@ class SwitchSetConfigParams(BaseModel):
 class SwitchSetConfigRequest(JSONRPCRequest):
     method: str = Field("Switch.SetConfig", description="Method to be invoked")
     params: SwitchSetConfigParams = Field(..., description="Parameters for the method")
+
+
+class SwitchSetConfigResponse(BaseModel):
+    restart_required: bool = Field(
+        ...,
+        description="reboot needed?",
+    )
 
 
 # Switch.GetConfig
@@ -230,17 +239,42 @@ class Switch():
         result = SwitchSetResponse(**response.json()["result"])
         return result
 
-    def toggle():
-        pass
+    def toggle(self):
+        req = SwitchToggleRequest(
+            id=1,
+            params=SwitchToggleParams(id=self.switch_id)
+        )
+        response = post(self.device_rpc_url, json=req.dict())
+        result = SwitchToggleResponse(**response.json()["result"])
+        return result
 
-    def set_config():
-        pass
+    def set_config(self, config: SwitchConfig):
+        req = SwitchSetConfigRequest(
+            id=1,
+            params=SwitchSetConfigParams(id=self.switch_id, config=config)
+        )
+        response = post(self.device_rpc_url, json=req.dict())
+        print(response.json())
+        return SwitchSetConfigResponse(**response.json()["result"])
 
-    def get_config():
-        pass
 
-    def get_status():
-        pass
+    def get_config(self):
+        req = SwitchGetConfigRequest(
+            id=1,
+            params=SwitchGetConfigParams(id=self.switch_id)
+        )
+        response = post(self.device_rpc_url, json=req.dict())
+        print(response.json())
+        result = SwitchConfig(**response.json()["result"])
+        return SwitchConfig(**response.json()["result"])
+
+    def get_status(self):
+        req = SwitchGetStatusRequest(
+            id=1,
+            params=SwitchGetStatusParams(id=self.switch_id)
+        )
+        response = post(self.device_rpc_url, json=req.dict())
+        return SwitchStatus(**response.json()["result"])
 
     def reset_counters():
         pass

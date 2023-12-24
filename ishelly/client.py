@@ -15,6 +15,7 @@ class ShellyClient(object):
         self.shelly_app = device_info.app
 
     def get_device_info(self):
+        print("Getting device info")
         req = ShellyGetDeviceInfoRequest(id=1, params=ShellyGetDeviceInfoParams(ident=True))
         response = post(self.device_api_url, json=req.model_dump())
         shelly_get_device_info_response = ShellyGetDeviceInfoResponse(
@@ -26,4 +27,5 @@ class ShellyClient(object):
 class ShellyPlug(ShellyClient):
     def __init__(self, device_url):
         super().__init__(device_url)
+        print("Base init completed")
         self.switch = Switch(self.device_api_url, 0)

@@ -29,3 +29,4 @@ class ShellyPlug(ShellyClient):
         super().__init__(device_url)
         print("Base init completed")
         self.switch = Switch(self.device_api_url, 0)
+        self.schedule = Scheduler(self.device_api_url)

@@ -78,10 +78,10 @@ class SwitchStatus(BaseModel):
     output: bool = Field(
         ..., description="true if the output channel is currently on, false otherwise"
     )
-    timer_started_at: Optional[int] = Field(
+    timer_started_at: Optional[float] = Field(
         None, description="Unix timestamp, start time of the timer (in UTC)"
     )
-    timer_duration: Optional[int] = Field(
+    timer_duration: Optional[float] = Field(
         None, description="Duration of the timer in seconds"
     )
     apower: Optional[float] = Field(

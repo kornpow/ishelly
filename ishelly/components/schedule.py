@@ -152,18 +152,15 @@ class ScheduleDeleteAllResponse(BaseModel):
 # ScheduleDeleteAllResponse(**response.json()["result"])
 
 
-class Scheduler():
+class Scheduler:
     def __init__(self, device_rpc_url):
         self.device_rpc_url = device_rpc_url
 
     def create(self, enable: bool, timespec: str, calls: List[JSONRPCRequest]):
         new_schedule = ScheduleCreateParams(
-                enable=enable, timespec=timespec, calls=calls
-            )
-        req = ScheduleCreateRequest(
-            id=1,
-            params=new_schedule
+            enable=enable, timespec=timespec, calls=calls
         )
+        req = ScheduleCreateRequest(id=1, params=new_schedule)
 
         response = post(self.device_rpc_url, json=req.model_dump())
         schedule_create_1 = ScheduleCreateResponse(**response.json()["result"])
@@ -181,7 +178,10 @@ class Scheduler():
         req = ScheduleUpdateRequest(
             id=1,
             params=ScheduleUpdateParams(
-                id=id, enable=enabled, timespec=scheduled_tasks.jobs[0].timespec, calls=scheduled_tasks.jobs[0].calls
+                id=id,
+                enable=enabled,
+                timespec=scheduled_tasks.jobs[0].timespec,
+                calls=scheduled_tasks.jobs[0].calls,
             ),
         )
         response = post(self.device_rpc_url, json=req.model_dump())
@@ -193,4 +193,3 @@ class Scheduler():
 
     def delete_all(self):
         pass
-    

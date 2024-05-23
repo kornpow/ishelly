@@ -103,6 +103,7 @@ class SwitchStatus(BaseModel):
     )
     errors: Optional[List[str]] = Field(None, description="Error conditions occurred")
 
+
 # Methods
 # Switch.Set
 class SwitchSetParams(BaseModel):
@@ -111,6 +112,7 @@ class SwitchSetParams(BaseModel):
     toggle_after: Optional[int] = Field(
         None, description="Seconds to pass until the switch state is toggled"
     )
+
 
 class SwitchSetRequest(JSONRPCRequest):
     method: str = Field("Switch.Set", description="Method to be invoked")
@@ -225,43 +227,34 @@ class SwitchGetConfigRequest(JSONRPCRequest):
 # response = post(device_rpc_url, json=req.model_dump())
 
 
-class Switch():
+class Switch:
     def __init__(self, device_rpc_url, switch_id):
         self.switch_id = switch_id
         self.device_rpc_url = device_rpc_url
 
     def set(self, params: SwitchSetParams):
-        req = SwitchSetRequest(
-            id=1,
-            params=params
-        )
+        req = SwitchSetRequest(id=1, params=params)
         response = post(self.device_rpc_url, json=req.model_dump())
         result = SwitchSetResponse(**response.json()["result"])
         return result
 
     def toggle(self):
-        req = SwitchToggleRequest(
-            id=1,
-            params=SwitchToggleParams(id=self.switch_id)
-        )
+        req = SwitchToggleRequest(id=1, params=SwitchToggleParams(id=self.switch_id))
         response = post(self.device_rpc_url, json=req.dict())
         result = SwitchToggleResponse(**response.json()["result"])
         return result
 
     def set_config(self, config: SwitchConfig):
         req = SwitchSetConfigRequest(
-            id=1,
-            params=SwitchSetConfigParams(id=self.switch_id, config=config)
+            id=1, params=SwitchSetConfigParams(id=self.switch_id, config=config)
         )
         response = post(self.device_rpc_url, json=req.dict())
         print(response.json())
         return SwitchSetConfigResponse(**response.json()["result"])
 
-
     def get_config(self):
         req = SwitchGetConfigRequest(
-            id=1,
-            params=SwitchGetConfigParams(id=self.switch_id)
+            id=1, params=SwitchGetConfigParams(id=self.switch_id)
         )
         response = post(self.device_rpc_url, json=req.dict())
         print(response.json())
@@ -270,8 +263,7 @@ class Switch():
 
     def get_status(self):
         req = SwitchGetStatusRequest(
-            id=1,
-            params=SwitchGetStatusParams(id=self.switch_id)
+            id=1, params=SwitchGetStatusParams(id=self.switch_id)
         )
         response = post(self.device_rpc_url, json=req.dict())
         return SwitchStatus(**response.json()["result"])

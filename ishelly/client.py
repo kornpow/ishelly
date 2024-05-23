@@ -16,7 +16,9 @@ class ShellyClient(object):
 
     def get_device_info(self):
         print("Getting device info")
-        req = ShellyGetDeviceInfoRequest(id=1, params=ShellyGetDeviceInfoParams(ident=True))
+        req = ShellyGetDeviceInfoRequest(
+            id=1, params=ShellyGetDeviceInfoParams(ident=True)
+        )
         response = post(self.device_api_url, json=req.model_dump())
         shelly_get_device_info_response = ShellyGetDeviceInfoResponse(
             **response.json()["result"]

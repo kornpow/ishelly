@@ -20,10 +20,6 @@ pip install ishelly
 
 ## Usage
 ```python
-from pprint import pprint
-from requests import post
-
-
 from ishelly.components.switch import *
 from ishelly.components.schedule import *
 from ishelly.components.shelly import *
@@ -59,3 +55,6 @@ plug_pro.schedule.update(4, False, "0 */5 * * * *", calls=[turn_on])
 # Step 5: Delete the schedule with ID 4
 plug_pro.schedule.delete(4)
 ```
+
+## Example
+The above example code, and more is located at: [examples](examples)

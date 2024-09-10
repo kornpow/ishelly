@@ -1,7 +1,3 @@
-from pprint import pprint
-from requests import post
-
-
 from ishelly.components.switch import *
 from ishelly.components.schedule import *
 from ishelly.components.shelly import *

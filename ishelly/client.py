@@ -38,10 +38,7 @@ class Shelly2PM(ShellyClient):
     def __init__(self, device_url):
         super().__init__(device_url)
         print("Base init completed")
-        self.switch = [
-            Switch(self.device_api_url, 0),
-            Switch(self.device_api_url, 1)
-        ]
+        self.switch = [Switch(self.device_api_url, 0), Switch(self.device_api_url, 1)]
         self.schedule = Scheduler(self.device_api_url)
 
 
@@ -53,7 +50,6 @@ class ShellyPro4PM(ShellyClient):
             Switch(self.device_api_url, 0),
             Switch(self.device_api_url, 1),
             Switch(self.device_api_url, 2),
-            Switch(self.device_api_url, 3)
-
+            Switch(self.device_api_url, 3),
         ]
         self.schedule = Scheduler(self.device_api_url)

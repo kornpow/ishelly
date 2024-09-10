@@ -140,7 +140,6 @@ class ScheduleDeleteAllResponse(BaseModel):
 # ScheduleListResponse(**response.json()["result"])
 
 
-
 # req = ScheduleDeleteAllRequest(id=1)
 # response = post(device_rpc_url, json=req.model_dump())
 # ScheduleDeleteAllResponse(**response.json()["result"])
@@ -195,10 +194,7 @@ class Scheduler:
         return schedule_update
 
     def delete(self, task_id):
-        req = ScheduleDeleteRequest(
-            id=1,
-            params=ScheduleDeleteParams(id=task_id)
-        )
+        req = ScheduleDeleteRequest(id=1, params=ScheduleDeleteParams(id=task_id))
         response = post(self.device_rpc_url, json=req.model_dump())
         schedule_delete = ScheduleDeleteResponse(**response.json()["result"])
         return schedule_delete

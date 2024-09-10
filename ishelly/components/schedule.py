@@ -140,12 +140,6 @@ class ScheduleDeleteAllResponse(BaseModel):
 # ScheduleListResponse(**response.json()["result"])
 
 
-# req = ScheduleDeleteRequest(
-#     id=1,
-#     params=ScheduleDeleteParams(id=1)
-# )
-# response = post(device_rpc_url, json=req.model_dump())
-# a = ScheduleDeleteResponse(**response.json()["result"])
 
 # req = ScheduleDeleteAllRequest(id=1)
 # response = post(device_rpc_url, json=req.model_dump())
@@ -172,24 +166,42 @@ class Scheduler:
         scheduled_tasks = ScheduleListResponse(**response.json()["result"])
         return scheduled_tasks
 
-    def update(self, id, enabled=None, timespec=None, calls=None):
+    def get_by_id(self, task_id):
         scheduled_tasks = self.list()
-        power_control_active = True
+        job = next(filter(lambda task: task.id == task_id, scheduled_tasks.jobs), None)
+        return job
+
+    def update(self, task_id, enabled=None, timespec=None, calls=None):
+        existing_task = self.get_by_id(task_id)
+
+        if existing_task == None:
+            raise ValueError("Cannot update task, it does not exist!")
+
+        new_enabled = enabled if enabled is not None else existing_task.enable
+        new_timespec = timespec if timespec is not None else existing_task.timespec
+        new_calls = calls if calls is not None else existing_task.calls
+
         req = ScheduleUpdateRequest(
             id=1,
             params=ScheduleUpdateParams(
-                id=id,
-                enable=enabled,
-                timespec=scheduled_tasks.jobs[0].timespec,
-                calls=scheduled_tasks.jobs[0].calls,
+                id=task_id,
+                enable=new_enabled,
+                timespec=new_timespec,
+                calls=new_calls,
             ),
         )
         response = post(self.device_rpc_url, json=req.model_dump())
         schedule_update = ScheduleUpdateResponse(**response.json()["result"])
         return schedule_update
 
-    def delete(self):
-        pass
+    def delete(self, task_id):
+        req = ScheduleDeleteRequest(
+            id=1,
+            params=ScheduleDeleteParams(id=task_id)
+        )
+        response = post(self.device_rpc_url, json=req.model_dump())
+        schedule_delete = ScheduleDeleteResponse(**response.json()["result"])
+        return schedule_delete
 
     def delete_all(self):
         pass

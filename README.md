@@ -1,12 +1,21 @@
 # ishelly
 A shelly api wrapper library which uses pydantic models to use the api and as much of the shelly v2 features as possible. No shelly v1 support planned.
 
+This library was built with the support of the LightningSpore open-source mushroom growing project: 
+- https://lightningspore.com
+- https://github.com/lightningspore/mushroom-monorepo
+
 ## Supported Devices
 
 **Available Devices**
 - Shelly Plug US
 - Shelly 2PM
 - Shelly Pro 4PM
+
+## Install
+```bash
+pip install ishelly
+```
 
 
 ## Usage

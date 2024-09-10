@@ -3,7 +3,7 @@ from typing import Optional, Union, Dict, Any, List
 
 
 class BaseComponent:
-    def __init_(self):
+    def __init__(self):
         pass
 
 

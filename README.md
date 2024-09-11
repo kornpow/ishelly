@@ -19,6 +19,7 @@ pip install ishelly
 
 
 ## Usage
+### Switch Control
 ```python
 from ishelly.components.switch import *
 from ishelly.components.schedule import *
@@ -55,6 +56,14 @@ plug_pro.schedule.update(4, False, "0 */5 * * * *", calls=[turn_on])
 # Step 5: Delete the schedule with ID 4
 plug_pro.schedule.delete(4)
 ```
+
+### Device Discovery
+```python
+from ishelly.client import ShellyDiscovery
+discovery = ShellyDiscovery("10.0.0.0/24")
+discovery.discover_devices()
+```
+
 
 ## Example
 The above example code, and more is located at: [examples](examples)

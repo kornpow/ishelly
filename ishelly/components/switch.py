@@ -115,7 +115,7 @@ class SwitchSetParams(BaseModel):
 
 
 class SwitchSetRequest(JSONRPCRequest):
-    method: str = Field("Switch.Set", description="Method to be invoked")
+    method: str = Field("switch.set", description="Method to be invoked")
     params: SwitchSetParams = Field(..., description="Parameters for the method")
 
 

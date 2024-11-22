@@ -1,4 +1,6 @@
 from requests import post
+from urllib.parse import urlparse
+
 
 from ishelly.components.switch import *
 from ishelly.components.schedule import *
@@ -7,7 +9,10 @@ from ishelly.components.shelly import *
 
 class ShellyClient(object):
     def __init__(self, device_url):
-        self.device_api_url = device_url + "/rpc"
+        parsed_url = urlparse(device_url)
+        if not parsed_url.scheme:
+            device_url = f"http://{device_url}"
+        self.device_api_url = f"{device_url}/rpc"
         self.shelly_gen = None
         self.shelly_app = None
         device_info = self.get_device_info()
@@ -93,7 +98,7 @@ class ShellyDiscovery:
             response = post(device_url, json=req.model_dump(), timeout=2)
             # Check for valid response code and properly formatted response
             if response.status_code == 200 and "id" in response.json():
-                return device_url
+                return ip
         except (requests.exceptions.RequestException, socket.timeout):
             pass
         return None

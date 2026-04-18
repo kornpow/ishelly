@@ -11,6 +11,14 @@ class SwitchConfig(BaseModel):
     name: Optional[Union[str, None]] = Field(
         None, description="Name of the switch instance"
     )
+    in_mode: Optional[str] = Field(
+        None,
+        description="Mode of the associated input. Range of values: momentary, follow, flip, detached, cycle, activate",
+    )
+    in_locked: Optional[bool] = Field(
+        None,
+        description="If True, all changes to physical inputs are ignored, regardless of mode",
+    )
     initial_state: str = Field(..., description="Output state to set on power_on")
     auto_on: bool = Field(
         ...,
@@ -44,6 +52,10 @@ class SwitchConfig(BaseModel):
     )
     current_limit: Optional[float] = Field(
         None, description="Limit (in Amperes) over which overcurrent condition occurs"
+    )
+    reverse: Optional[bool] = Field(
+        None,
+        description="Reverse measurement direction of active power and energy (requires restart)",
     )
     restart_required: Optional[bool] = Field(
         None,
@@ -97,6 +109,9 @@ class SwitchStatus(BaseModel):
     aenergy: Optional[ActiveEnergy] = Field(
         None, description="Information about the active energy counter"
     )
+    ret_aenergy: Optional[ActiveEnergy] = Field(
+        None, description="Information about the returned active energy counter"
+    )
     temperature: Optional[Temperature] = Field(
         None, description="Information about the temperature"
     )
@@ -108,7 +123,7 @@ class SwitchStatus(BaseModel):
 class SwitchSetParams(BaseModel):
     id: int = Field(..., description="Id of the Switch component instance")
     on: bool = Field(..., description="State to set the switch")
-    toggle_after: Optional[int] = Field(
+    toggle_after: Optional[float] = Field(
         None, description="Seconds to pass until the switch state is toggled"
     )
 
@@ -166,7 +181,7 @@ class SwitchSetConfigRequest(JSONRPCRequest):
 class SwitchSetConfigResponse(BaseModel):
     restart_required: bool = Field(
         ...,
-        description="reboot needed?",
+        description="True if a restart is required to apply the new configuration",
     )
 
 
@@ -183,6 +198,10 @@ class SwitchGetConfigRequest(JSONRPCRequest):
 # Switch.ResetCounters
 class SwitchResetCountersParams(BaseModel):
     id: int = Field(..., description="Id of the Switch component instance")
+    type: Optional[List[str]] = Field(
+        None,
+        description="Array of counter names to reset. If omitted, all counters are reset. Values: aenergy, ret_aenergy",
+    )
 
 
 class SwitchResetCountersRequest(JSONRPCRequest):
@@ -199,8 +218,11 @@ class ResetEnergy(BaseModel):
 
 
 class SwitchResetCountersResponse(BaseModel):
-    aenergy: ResetEnergy = Field(
-        ..., description="Energy counter value at the time of reset"
+    aenergy: Optional[ResetEnergy] = Field(
+        None, description="Active energy counter value at the time of reset"
+    )
+    ret_aenergy: Optional[ResetEnergy] = Field(
+        None, description="Returned active energy counter value at the time of reset"
     )
 
 
@@ -240,9 +262,11 @@ class Switch:
         response = post(self.device_rpc_url, json=req.model_dump())
         return SwitchConfig(**response.json()["result"])
 
-    def reset_counters(self) -> SwitchResetCountersResponse:
+    def reset_counters(
+        self, type: Optional[List[str]] = None
+    ) -> SwitchResetCountersResponse:
         req = SwitchResetCountersRequest(
-            id=1, params=SwitchResetCountersParams(id=self.switch_id)
+            id=1, params=SwitchResetCountersParams(id=self.switch_id, type=type)
         )
         response = post(self.device_rpc_url, json=req.model_dump())
         return SwitchResetCountersResponse(**response.json()["result"])

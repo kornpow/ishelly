@@ -8,6 +8,8 @@ from ishelly.client import (
 from ishelly.components.switch import Switch, SwitchStatus, SwitchConfig
 from ishelly.components.schedule import Scheduler, Schedule
 from ishelly.components.kvs import KVS
+from ishelly.components.script import Script
+from ishelly.components.webhook import Webhook
 
 __all__ = [
     "ShellyClient",
@@ -21,4 +23,6 @@ __all__ = [
     "Scheduler",
     "Schedule",
     "KVS",
+    "Script",
+    "Webhook",
 ]

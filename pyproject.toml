@@ -1,6 +1,6 @@
 [project]
 name = "ishelly"
-version = "0.1.6"
+version = "0.1.7"
 description = "Control Shelly Home Automation Devices"
 authors = [{ name = "LightningSpore", email = "admin@lightningspore.com" }]
 readme = "README.md"

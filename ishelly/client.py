@@ -10,6 +10,8 @@ from ishelly.components.switch import *
 from ishelly.components.schedule import *
 from ishelly.components.shelly import *
 from ishelly.components.kvs import KVS
+from ishelly.components.script import Script
+from ishelly.components.webhook import Webhook
 
 
 class ShellyClient(object):
@@ -38,6 +40,8 @@ class ShellyPlug(ShellyClient):
         self.switch = Switch(self.device_api_url, 0)
         self.schedule = Scheduler(self.device_api_url)
         self.kvs = KVS(self.device_api_url)
+        self.script = Script(self.device_api_url)
+        self.webhook = Webhook(self.device_api_url)
 
 
 class Shelly2PM(ShellyClient):
@@ -46,6 +50,8 @@ class Shelly2PM(ShellyClient):
         self.switch = [Switch(self.device_api_url, 0), Switch(self.device_api_url, 1)]
         self.schedule = Scheduler(self.device_api_url)
         self.kvs = KVS(self.device_api_url)
+        self.script = Script(self.device_api_url)
+        self.webhook = Webhook(self.device_api_url)
 
 
 class ShellyPro4PM(ShellyClient):
@@ -59,6 +65,8 @@ class ShellyPro4PM(ShellyClient):
         ]
         self.schedule = Scheduler(self.device_api_url)
         self.kvs = KVS(self.device_api_url)
+        self.script = Script(self.device_api_url)
+        self.webhook = Webhook(self.device_api_url)
 
 
 class ShellyDiscovery:

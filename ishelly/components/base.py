@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Union, Dict, Any, List
 
 
@@ -15,3 +15,11 @@ class JSONRPCRequest(BaseModel):
     params: Optional[Dict[str, Any]] = Field(
         None, description="Parameters for the method"
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def coerce_params(cls, values):
+        params = values.get("params")
+        if isinstance(params, BaseModel):
+            values["params"] = params.model_dump(exclude_none=True)
+        return values

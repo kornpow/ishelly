@@ -199,5 +199,7 @@ class Scheduler:
         schedule_delete = ScheduleDeleteResponse(**response.json()["result"])
         return schedule_delete
 
-    def delete_all(self):
-        pass
+    def delete_all(self) -> ScheduleDeleteAllResponse:
+        req = ScheduleDeleteAllRequest(id=1)
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return ScheduleDeleteAllResponse(**response.json()["result"])

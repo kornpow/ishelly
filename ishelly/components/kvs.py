@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional
 
+from requests import post
+
 from ishelly.components.base import JSONRPCRequest
 
 
@@ -67,7 +69,9 @@ class KVSListParams(BaseModel):
 
 class KVSListRequest(JSONRPCRequest):
     method: str = Field("KVS.List", description="Method to be invoked")
-    params: KVSListParams = Field(..., description="Parameters for the method")
+    params: Optional[KVSListParams] = Field(
+        None, description="Parameters for the method"
+    )
 
 
 class KVSListResponse(BaseModel):
@@ -94,22 +98,32 @@ class KVSDeleteResponse(BaseModel):
     rev: int = Field(..., description="Revision of the store (after delete)")
 
 
-req = KVSSetRequest(id=1, params=KVSSetParams(key="sample_key1", value="sample_value1"))
+class KVS:
+    def __init__(self, device_rpc_url: str):
+        self.device_rpc_url = device_rpc_url
 
-response = post(device_rpc_url, json=req.model_dump())
-kvs_set_response = KVSSetResponse(**response.json()["result"])
+    def set(self, key: str, value: Any, etag: Optional[str] = None) -> KVSSetResponse:
+        req = KVSSetRequest(id=1, params=KVSSetParams(key=key, value=value, etag=etag))
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return KVSSetResponse(**response.json()["result"])
 
-req = KVSGetRequest(id=1, params=KVSGetParams(key="sample_key"))
-response = post(device_rpc_url, json=req.model_dump())
+    def get(self, key: str) -> KVSGetResponse:
+        req = KVSGetRequest(id=1, params=KVSGetParams(key=key))
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return KVSGetResponse(**response.json()["result"])
 
+    def get_many(self, match: Optional[str] = None) -> KVSGetManyResponse:
+        req = KVSGetManyRequest(id=1, params=KVSGetManyParams(match=match))
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return KVSGetManyResponse(**response.json()["result"])
 
-req = KVSGetManyRequest(id=1, params=KVSGetManyParams(key="sample_key*"))
-response = post(device_rpc_url, json=req.model_dump())
-kvs_getmany_response = KVSGetManyResponse(**response.json()["result"])
+    def list(self, match: Optional[str] = None) -> KVSListResponse:
+        params = KVSListParams(match=match) if match is not None else None
+        req = KVSListRequest(id=1, params=params)
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return KVSListResponse(**response.json()["result"])
 
-
-req = KVSDeleteRequest(
-    id=1, params=KVSDeleteParams(key="sample_key", etag="0E8HnTToCT8e6BNK29wR1UGA==")
-)
-response = post(device_rpc_url, json=req.model_dump())
-kvs_delete_response = KVSDeleteResponse(**response.json()["result"])
+    def delete(self, key: str, etag: Optional[str] = None) -> KVSDeleteResponse:
+        req = KVSDeleteRequest(id=1, params=KVSDeleteParams(key=key, etag=etag))
+        response = post(self.device_rpc_url, json=req.model_dump())
+        return KVSDeleteResponse(**response.json()["result"])

@@ -51,6 +51,7 @@ class ScriptPutCodeResponse(BaseModel):
 class ScriptGetCodeParams(BaseModel):
     id: int = Field(..., description="Id of the script")
     offset: Optional[int] = Field(None, description="Byte offset to start reading from")
+    len: Optional[int] = Field(None, description="Number of bytes to read")
 
 
 class ScriptGetCodeRequest(JSONRPCRequest):
@@ -140,6 +141,18 @@ class ScriptGetStatusRequest(JSONRPCRequest):
 class ScriptStatus(BaseModel):
     id: int = Field(..., description="Id of the script")
     running: bool = Field(..., description="True if the script is currently running")
+    mem_used: Optional[int] = Field(
+        None, description="Bytes of memory currently used by this script"
+    )
+    mem_peak: Optional[int] = Field(
+        None, description="Peak memory used since script was started"
+    )
+    mem_free: Optional[int] = Field(
+        None, description="Available memory for all scripts"
+    )
+    cpu: Optional[float] = Field(
+        None, description="Portion of time spent in JS interpreter (since 1.7.0)"
+    )
     errors: Optional[List[str]] = Field(None, description="Error conditions")
 
 
@@ -195,7 +208,9 @@ class Script:
     ) -> ScriptPutCodeResponse:
         req = ScriptPutCodeRequest(
             id=1,
-            params=ScriptPutCodeParams(id=script_id, code=code, append=append or None),
+            params=ScriptPutCodeParams(
+                id=script_id, code=code, append=append if append else None
+            ),
         )
         response = post(self.device_rpc_url, json=req.model_dump())
         return ScriptPutCodeResponse(**response.json()["result"])
@@ -233,6 +248,21 @@ class Script:
         req = ScriptGetStatusRequest(id=1, params=ScriptGetStatusParams(id=script_id))
         response = post(self.device_rpc_url, json=req.model_dump())
         return ScriptStatus(**response.json()["result"])
+
+    def put_code_from_file(
+        self, script_id: int, path: str, chunk_size: int = 1024
+    ) -> int:
+        """Upload a JS file to the device in chunks of chunk_size bytes (default 1024).
+        The script must not be running. Returns total bytes uploaded."""
+        with open(path, "r") as f:
+            code = f.read()
+        total = 0
+        for i in range(0, len(code), chunk_size):
+            chunk = code[i : i + chunk_size]
+            append = i > 0
+            result = self.put_code(script_id, chunk, append=append)
+            total = result.len
+        return total
 
     def get_config(self, script_id: int) -> ScriptConfig:
         req = ScriptGetConfigRequest(id=1, params=ScriptGetConfigParams(id=script_id))

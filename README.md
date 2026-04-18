@@ -57,6 +57,81 @@ plug_pro.schedule.update(4, False, "0 */5 * * * *", calls=[turn_on])
 plug_pro.schedule.delete(4)
 ```
 
+### JavaScript Scripts
+
+Shelly Gen2 devices can run JavaScript scripts on-device. Scripts can toggle outputs,
+respond to events, run timers, and more. Up to 3 scripts can run simultaneously.
+
+> **Upload limit**: The device accepts at most ~8 KB per `PutCode` call. For larger
+> scripts use `put_code_from_file`, which automatically splits the file into 1024-byte
+> chunks using the `append` flag — matching Shelly's own recommended tooling.
+
+#### Inline script (small scripts)
+
+```python
+from ishelly.client import ShellyPlug
+from ishelly.components.script import ScriptConfig
+
+plug = ShellyPlug("192.168.1.38")
+
+# 1. Create a script slot
+s = plug.script.create("1min-cycle")
+
+# 2. Upload JavaScript code
+CODE = """
+var on = true;
+function cycle() {
+  Shelly.call("Switch.Set", {id: 0, on: on}, null, null);
+  on = !on;
+  Timer.set(60000, false, cycle, null);
+}
+cycle();
+"""
+plug.script.put_code(s.id, CODE)
+
+# 3. Enable auto-start on boot
+cfg = ScriptConfig(id=s.id, name="1min-cycle", enable=True)
+plug.script.set_config(s.id, cfg)
+
+# 4. Start it now
+plug.script.start(s.id)
+```
+
+#### Upload from a file (large scripts)
+
+```python
+from ishelly.client import ShellyPlug
+from ishelly.components.script import ScriptConfig
+
+plug = ShellyPlug("192.168.1.38")
+
+s = plug.script.create("my-script")
+
+# Uploads in 1024-byte chunks automatically
+total_bytes = plug.script.put_code_from_file(s.id, "my_script.js")
+print(f"Uploaded {total_bytes} bytes")
+
+cfg = ScriptConfig(id=s.id, name="my-script", enable=True)
+plug.script.set_config(s.id, cfg)
+plug.script.start(s.id)
+```
+
+#### Managing scripts
+
+```python
+# List all scripts
+for script in plug.script.list().scripts:
+    print(script.id, script.name, "running:", script.running)
+
+# Check status (memory usage, errors)
+status = plug.script.get_status(1)
+print(f"running={status.running} mem_used={status.mem_used} mem_free={status.mem_free}")
+
+# Stop and delete
+plug.script.stop(1)
+plug.script.delete(1)
+```
+
 ### Device Discovery
 ```python
 from ishelly.client import ShellyDiscovery
@@ -67,3 +142,19 @@ discovery.discover_devices()
 
 ## Example
 The above example code, and more is located at: [examples](examples)
+
+---
+
+## Alternatives
+
+| Library | PyPI | Style | Gen2 | Notes |
+|---|---|---|---|---|
+| **aioshelly** | [`aioshelly`](https://pypi.org/project/aioshelly/) | async (`asyncio`) | ✅ | Official Home Assistant library. Actively maintained. Requires Python ≥ 3.11. No Pydantic models — designed for HA integration, not general scripting. |
+| **pyShelly** | [`pyShelly`](https://pypi.org/project/pyShelly/) | sync | ⚠️ partial | Gen1-focused. Last release Dec 2024. Less comprehensive Gen2 support. |
+
+**ishelly** is the right choice if you want:
+- Synchronous, script-friendly API (no `async/await` boilerplate)
+- Typed Pydantic models for all requests and responses
+- Full Gen2 component coverage: Switch, Schedule, KVS, Script, Webhook
+- Python 3.9+
+

@@ -12,6 +12,7 @@ from ishelly.components.shelly import *
 from ishelly.components.kvs import KVS
 from ishelly.components.script import Script
 from ishelly.components.webhook import Webhook
+from ishelly.components.rgbw import RGBW
 
 
 class ShellyClient(object):
@@ -63,6 +64,19 @@ class ShellyPro4PM(ShellyClient):
             Switch(self.device_api_url, 2),
             Switch(self.device_api_url, 3),
         ]
+        self.schedule = Scheduler(self.device_api_url)
+        self.kvs = KVS(self.device_api_url)
+        self.script = Script(self.device_api_url)
+        self.webhook = Webhook(self.device_api_url)
+
+
+class ShellyRGBWPM(ShellyClient):
+    """Shelly RGBW PM LED strip controller (Gen2, 4-channel PWM + power metering)."""
+
+    def __init__(self, device_url):
+        super().__init__(device_url)
+        # The RGBW PM exposes a single RGBW component at id=0
+        self.rgbw = RGBW(self.device_api_url, 0)
         self.schedule = Scheduler(self.device_api_url)
         self.kvs = KVS(self.device_api_url)
         self.script = Script(self.device_api_url)
